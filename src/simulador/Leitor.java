@@ -119,8 +119,8 @@ public class Leitor {
 								l1 = Math.pow(2, Q);
 								qTemp = (int) Math.round(Math.log(r) / Math.log(2));
 								l2 = Math.pow(2, qTemp);
-								ps1 = Math.pow((r / l1) * (1 - (1 / l1)), (r - 1));
-								ps2 = Math.pow((r / l2) * (1 - (1 / l2)), (r - 1));
+								ps1 = (r / l1) *  Math.pow((1 - (1 / l1)), (r - 1));
+								ps2 = (r / l2) *  Math.pow((1 - (1 / l2)), (r - 1));
 								if((l1 * ps1 - sucessos) < l2 * ps2) Qn = qTemp;
 							}
 							rAnt = r;
