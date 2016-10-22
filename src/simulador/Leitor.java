@@ -65,6 +65,7 @@ public class Leitor {
 										
 					numSlots = numSlots + Q; //Atualizando a quantidade total de Slots utilizados
 					comandosT++; //Comando para informar o tamanho do quadr
+					//Esse for é o nosso Broadcast(Q)
 					for(int i = 0; i < tagsR; i++){ //Tento ler nos slots do quadro
 						frame[rdmGenerator.nextInt(Q)]++;
 					}
@@ -81,7 +82,7 @@ public class Leitor {
 								tagsR--; //se houve sucesso, decremento o numero de tags restantes
 							} else colisoes++;
 						}
-					}else{
+					}else{ //Codigo do ILCM
 						int i = 0;
 						int Qn = -1;
 						double l = 0.0;
@@ -96,8 +97,13 @@ public class Leitor {
 						double zxx = Math.pow(2, Q);
 						double rAnt = 0.0;
 						
-						while((Qn == -1)&&(i < zxx)){
-							
+						while((Qn == -1)&&(i < zxx)&&(i < Q)){
+							if(frame[i] == 0){
+								vazios++;
+							}else if(frame[i] == 1){
+								sucessos++;
+								tagsR--; //se houve sucesso, decremento o numero de tags restantes
+							} else colisoes++;
 							i++;
 							k = colisoes / ((4.344 * i - 16.28) + (i / (-2.282 - 0.273 * i) * colisoes) + 0.2407 * Math.log(i + 42.56));
 							l = (1.2592 + 1.513 * i) * Math.tan(Math.pow(1.234 * i, -0.9907)) * colisoes;
@@ -105,19 +111,20 @@ public class Leitor {
 							n = k * sucessos + l;
 							r = (n * Math.pow(2, Q)) / i;
 							if (colisoes == 0) r = (sucessos * Math.pow(2, Q)) / i;
-							if ((i > 1) && ((r - rAnt) < 1)) {
+							if ((i > 1) && ((r - rAnt) < 1)) { //
 								l1 = Math.pow(2, Q);
 								qTemp = (int) Math.round(Math.log(r) / Math.log(2));
 								l2 = Math.pow(2, qTemp);
-								ps1 = (r / l1) *  Math.pow((1 - (1 / l1)), rAnt);
-								ps2 = (r / l2) *  Math.pow((1 - (1 / l2)), rAnt);
+								ps1 = (r / l1) *  Math.pow((1 - (1 / l1)), (r - 1));
+								ps2 = (r / l2) *  Math.pow((1 - (1 / l2)), (r - 1));
 								if((l1 * ps1 - sucessos) < l2 * ps2) Qn = qTemp;
 							}
 							rAnt = r;
-						}
+						}//fim do while do ILCM
 						if(Qn != -1){
 							Q = Qn;
 						}
+						System.out.println("Tamanho do Quadro = "+Q+", tags a identificar: "+tagsR);
 					}
 					//Agora tenho que redimensionar o quadro segundo os estimadores
 					switch (estimador) {
@@ -134,41 +141,11 @@ public class Leitor {
 						break;
 						
 					case "ILCM-SbS":
-						int i = 0;
-						int Qn = -1;
-						double l = 0.0;
-						double k = 0.0;
-						double n = 0.0;
-						double r = 0.0;
-						double l1 = 0.0;
-						double l2 = 0.0;
-						int qTemp  = 0;
-						double ps1 = 0.0;
-						double ps2 = 0.0;
-						double zxx = Math.pow(2, Q);
-						double rAnt = 0.0;
+						//Devido ao if antes de processar a leitura, já temos o valor atualizado
+						//de Q, pois recebeu ou não Qn do pseudo-código do ILCM, logo não precisamos
+						//mais alterá-lo.
+						Q = Q;
 						
-						while((Qn == -1)&&(i < zxx)){
-							i++;
-							k = colisoes / ((4.344 * i - 16.28) + (i / (-2.282 - 0.273 * i) * colisoes) + 0.2407 * Math.log(i + 42.56));
-							l = (1.2592 + 1.513 * i) * Math.tan(Math.pow(1.234 * i, -0.9907)) * colisoes;
-							if (k < 0) k = 0;
-							n = k * sucessos + l;
-							r = (n * Math.pow(2, Q)) / i;
-							if (colisoes == 0) r = (sucessos * Math.pow(2, Q)) / i;
-							if ((i > 1) && ((r - rAnt) < 1)) {
-								l1 = Math.pow(2, Q);
-								qTemp = (int) Math.round(Math.log(r) / Math.log(2));
-								l2 = Math.pow(2, qTemp);
-								ps1 = (r / l1) *  Math.pow((1 - (1 / l1)), (r - 1));
-								ps2 = (r / l2) *  Math.pow((1 - (1 / l2)), (r - 1));
-								if((l1 * ps1 - sucessos) < l2 * ps2) Qn = qTemp;
-							}
-							rAnt = r;
-						}
-						if(Qn != -1){
-							Q = Qn;
-						}
 						break;
 						
 					case "Eom-Lee":
@@ -317,10 +294,10 @@ public class Leitor {
 	
 	public static void main(String[] args) {
 		//Parametros (estimador, passoIncremento, maxTags, numRepeticoes, frameSize, usaPotenciaDois)
-		Simulacao("Lower Bound", 100, 1000, 2000, 64, false);
-		Simulacao("Schoute", 100, 1000, 2000, 64, false);
-//		Simulacao("ILCM-SbS", 100, 1000, 2000, 64, false);
-		Simulacao("Eom-Lee", 100, 1000, 2000, 64, false);
+//		Simulacao("Lower Bound", 100, 1000, 2000, 64, false);
+	//	Simulacao("Schoute", 100, 1000, 2000, 64, false);
+		Simulacao("ILCM-SbS", 100, 1000, 1, 64, false);
+	//	Simulacao("Eom-Lee", 100, 1000, 2000, 64, false);
 		graphTotalSlots();
 		graphTotalVazios();
 		graphTotalColisao();
