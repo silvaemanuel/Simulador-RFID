@@ -105,8 +105,10 @@ public class Leitor {
 								tagsR--; //se houve sucesso, decremento o numero de tags restantes
 							} else colisoes++;
 							i++;
-							k = colisoes / ((4.344 * i - 16.28) + (i / (-2.282 - 0.273 * i) * colisoes) + 0.2407 * Math.log(i + 42.56));
-							l = (1.2592 + 1.513 * i) * Math.tan(Math.pow(1.234 * i, -0.9907)) * colisoes;
+							//k = colisoes / ((4.344 * i - 16.28) + (i / (-2.282 - 0.273 * i) * colisoes) + 0.2407 * Math.log(i + 42.56));
+							k = colisoes / (((4.344 * i - 16.28) + ((i / (-2.282 - 0.273 * i))) * colisoes) + (0.2407 * Math.log(i + 42.56)));
+							//l = (1.2592 + 1.513 * i) * Math.tan(Math.pow(1.234 * i, -0.9907)) * colisoes;
+							l = (1.2592 + (1.513 * i)) * (Math.tan((Math.pow((1.234 * i), -0.9907)) * colisoes));
 							if (k < 0) k = 0;
 							n = k * sucessos + l;
 							r = (n * Math.pow(2, Q)) / i;
